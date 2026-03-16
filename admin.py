@@ -1,46 +1,30 @@
-# admin.py
 from django.contrib import admin
-from .models import Lesson, Question, Choice, Submission  # import your models
+from .models import Course, Lesson, Instructor, Question, Choice, Submission, Enrollment
 
-# ---------- Inline Classes ----------
 
-class ChoiceInline(admin.TabularInline):
+class ChoiceInline(admin.InlineModelAdmin):
     model = Choice
-    extra = 2
-    fields = ('choice_text', 'votes')
-    readonly_fields = ('votes',)
+    extra = 3
 
-class QuestionInline(admin.TabularInline):
+
+class QuestionInline(admin.InlineModelAdmin):
     model = Question
-    extra = 1
-    fields = ('question_text', 'pub_date')
-    readonly_fields = ('pub_date',)
+    extra = 2
 
-# ---------- Admin Classes ----------
 
-@admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('question_text', 'pub_date', 'choice_count')
     inlines = [ChoiceInline]
+    list_display = ('content', 'course', 'grade')
 
-    def choice_count(self, obj):
-        return obj.choices.count()
-    choice_count.short_description = "Number of Choices"
 
-@admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('title', 'created_at', 'question_count')
-    inlines = [QuestionInline]
+    list_display = ('title', 'course')
 
-    def question_count(self, obj):
-        return obj.questions.count()
-    question_count.short_description = "Number of Questions"
 
-@admin.register(Choice)
-class ChoiceAdmin(admin.ModelAdmin):
-    list_display = ('choice_text', 'question', 'votes')
-
-@admin.register(Submission)
-class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ('user_name', 'question', 'choice', 'submitted_at')
-    list_filter = ('submitted_at',)
+admin.site.register(Course)
+admin.site.register(Lesson, LessonAdmin)
+admin.site.register(Instructor)
+admin.site.register(Question, QuestionAdmin)
+admin.site.register(Choice)
+admin.site.register(Submission)
+admin.site.register(Enrollment)
